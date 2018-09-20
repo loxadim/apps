@@ -22,7 +22,11 @@ export type Props = I18nProps & {
   balance?: Balance | Array<Balance>,
   children?: React.ReactNode,
   name?: string,
+<<<<<<< HEAD
   value: AccountId | AccountIndex | Address | string | null,
+=======
+  value: string | Uint8Array | null,
+>>>>>>> a6d78dd5... Account JSON backup & restore
   withBalance?: boolean,
   withIndex?: boolean,
   identIconSize?: number,

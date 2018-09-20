@@ -15,6 +15,8 @@
     "@polkadot/ui-keyring": "^0.21.0",
     "@polkadot/ui-react": "^0.21.0",
     "@polkadot/ui-react-rx": "^0.21.0",
+    "@polkadot/extrinsics": "^0.29.6",
+    "@polkadot/storage": "^0.29.6",
     "@types/chart.js": "^2.7.32",
     "@types/i18next-browser-languagedetector": "^2.0.1",
     "@types/i18next-xhr-backend": "^1.4.1",
