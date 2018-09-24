@@ -34,7 +34,7 @@ export type State = {
   keyring: BaseKeyringInstance
 };
 
-export type KeyringInstance = {
+export interface KeyringInstance {
   backupAccount: (pair: KeyringPair, password: string) => KeyringPair$Json,
   createAccount: (seed: Uint8Array, password?: string, meta?: KeyringPair$Meta) => KeyringPair,
   createAccountMnemonic: (seed: string, password?: string, meta?: KeyringPair$Meta) => KeyringPair,
@@ -55,4 +55,4 @@ export type KeyringInstance = {
   saveAddress: (address: string, meta: KeyringPair$Meta) => void,
   saveRecent: (address: string) => SingleAddress,
   setDevMode: (isDevelopment: boolean) => void
-};
+}

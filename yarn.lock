@@ -1530,6 +1530,17 @@
   dependencies:
     babel-runtime "^6.26.0"
 
+"@polkadot/keyring@^0.32.10":
+  version "0.32.10"
+  resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-0.32.10.tgz#6c162972dee06528ecc776b41a28a25b8042aaa9"
+  integrity sha512-mGlkjAj7AyEpDkLHbZcd3IZO5HPBueqjQ7cK8S3Ecu/OdxdxEV+kmrkdLc10JtKOvN2G7pRXapCz/wyoE1x4iw==
+  dependencies:
+    "@babel/runtime" "^7.1.2"
+    "@polkadot/util" "^0.32.10"
+    "@polkadot/util-crypto" "^0.32.10"
+    "@types/bs58" "^3.0.30"
+    bs58 "^4.0.1"
+
 "@polkadot/keyring@^0.32.9":
   version "0.32.9"
   resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-0.32.9.tgz#f08185c161e8c132e1679e4fc059a94b8b894bde"
@@ -1750,6 +1761,20 @@
   dependencies:
     "@babel/runtime" "^7.0.0"
     "@polkadot/util" "^0.30.7"
+    blakejs "^1.1.0"
+    js-sha3 "^0.8.0"
+    tweetnacl "^1.0.0"
+    xxhashjs "^0.2.2"
+
+"@polkadot/util-crypto@^0.32.10":
+  version "0.32.10"
+  resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-0.32.10.tgz#ddee301a4a223d0a7001bf2df012627a5faea455"
+  integrity sha512-9teUP/LtXLWE4nDPtyK8Q8zYUA27YatSzdm7ZXVY2xXwQwesV97fAsK0GBz6BdmlXKc52gEXeya6GJjLvUwFSg==
+  dependencies:
+    "@babel/runtime" "^7.1.2"
+    "@polkadot/util" "^0.32.10"
+    "@types/bip39" "^2.4.0"
+    bip39 "^2.5.0"
     blakejs "^1.1.0"
     js-sha3 "^0.8.0"
     tweetnacl "^1.0.0"
