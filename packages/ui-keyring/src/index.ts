@@ -10,11 +10,12 @@ import accounts from './observable/accounts';
 import addresses from './observable/addresses';
 import development from './observable/development';
 import loadAll from './loadAll';
-import addAccountPair from './account/addPair';
 import backupAccount from './account/backup';
 import createAccount from './account/create';
-import forgetAccount from './account/forget';
 import createAccountMnemonic from './account/mnemonic';
+import forgetAccount from './account/forget';
+import loadAccount from './account/load';
+import restoreAccount from './account/restore';
 import isAvailable from './isAvailable';
 import encryptAccount from './account/encrypt';
 import saveAccount from './account/save';
@@ -37,8 +38,6 @@ const state: State = {
 // FIXME The quicker we get in https://github.com/polkadot-js/apps/issues/138
 // the better, this is now completely out of control
 export default ({
-  addAccountPair: (pair: KeyringPair, password: string): KeyringPair =>
-    addAccountPair(state, pair, password),
   backupAccount: (pair: KeyringPair, password: string): KeyringPair$Json =>
     backupAccount(state, pair, password),
   createAccount: (seed: Uint8Array, password?: string, meta?: KeyringPair$Meta): KeyringPair =>
@@ -65,8 +64,12 @@ export default ({
     state.keyring.getPairs().filter((pair) =>
       development.isDevelopment() || pair.getMeta().isTesting !== true
     ),
+  loadAccount: (json: KeyringPair$Json): KeyringPair =>
+    loadAccount(state, json),
   loadAll: (): void =>
     loadAll(state),
+  restoreAccount: (json: KeyringPair$Json, password: string): KeyringPair =>
+    restoreAccount(state, json, password),
   saveAccount: (pair: KeyringPair, password?: string): void =>
     saveAccount(state, pair, password),
   saveAccountMeta: (pair: KeyringPair, meta: KeyringPair$Meta): void =>
