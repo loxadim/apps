@@ -22,11 +22,7 @@ export type Props = I18nProps & {
   balance?: Balance | Array<Balance>,
   children?: React.ReactNode,
   name?: string,
-<<<<<<< HEAD
   value: AccountId | AccountIndex | Address | string | null,
-=======
-  value: string | Uint8Array | null,
->>>>>>> a6d78dd5... Account JSON backup & restore
   withBalance?: boolean,
   withIndex?: boolean,
   identIconSize?: number,
@@ -125,13 +121,15 @@ class AddressSummary extends React.PureComponent<Props> {
     }
 
     const address = accountIndex.toString();
-    // {this.renderCopy(address)}
 
     return (
       <div className='ui--AddressSummary-data'>
         <div className='ui--AddressSummary-name'></div>
         <div className='ui--AddressSummary-accountIndex'>
           {address}
+        </div>
+        <div className='ui--AddressSummary-copy'>
+          {this.renderCopy(address)}
         </div>
       </div>
     );

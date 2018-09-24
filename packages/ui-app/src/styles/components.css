@@ -154,6 +154,11 @@ header .ui--Button-Group {
   font-style: italic;
 }
 
+.ui--AddressSummary-copy {
+  display: inline-block;
+  padding: 0 0.25em 0 0.5em;
+}
+
 .ui--CardSummary .ui.label {
   padding-left: 0;
   padding-right: 0;
