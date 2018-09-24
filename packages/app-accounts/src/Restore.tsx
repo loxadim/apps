@@ -7,6 +7,7 @@ import { I18nProps } from '@polkadot/ui-app/types';
 
 import React from 'react';
 import { AddressSummary, Button, InputAddress, InputFile, Password } from '@polkadot/ui-app/index';
+import classes from '@polkadot/ui-app/util/classes';
 import createPair from '@polkadot/keyring/pair';
 import { decodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex, isObject, u8aToString } from '@polkadot/util';
@@ -40,11 +41,11 @@ class Restore extends React.PureComponent<Props, State> {
   }
 
   render () {
-    const { t } = this.props;
+    const { className, t } = this.props;
     const { isFileValid, isPassValid, json } = this.state;
 
     return (
-      <div className='accounts--Restore'>
+      <div className={classes('accounts--Restore', className)}>
         <div className='ui--grid'>
           <AddressSummary
             className='shrink'

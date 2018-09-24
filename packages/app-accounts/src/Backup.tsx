@@ -6,8 +6,9 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import { I18nProps } from '@polkadot/ui-app/types';
 
 import React from 'react';
-import { AddressSummary, Button, Modal, Password } from '@polkadot/ui-app/index';
 import FileSaver from 'file-saver';
+import { AddressSummary, Button, Modal, Password } from '@polkadot/ui-app/index';
+import classes from '@polkadot/ui-app/util/classes';
 
 import translate from './translate';
 
@@ -34,8 +35,11 @@ class Backup extends React.PureComponent<Props, State> {
   }
 
   render () {
+    const { className } = this.props;
+
     return (
       <Modal
+        className={classes('accounts--Backup', className)}
         dimmer='inverted'
         open
         size='tiny'
