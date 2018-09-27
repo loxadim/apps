@@ -9,8 +9,6 @@ import hexToU8a from '@polkadot/util/hex/toU8a';
 import createPair from '@polkadot/util-keyring/pair';
 import decodeAddress from '@polkadot/util-keyring/address/decode';
 
-import addPair from './addPair';
-
 export default function accountRestore (state: State, json: KeyringPair$Json, password: string): KeyringPair {
   const pair = createPair(
     {
@@ -24,7 +22,6 @@ export default function accountRestore (state: State, json: KeyringPair$Json, pa
   // unlock, save account and then lock (locking cleans secretKey, so needs to be last)
   pair.decodePkcs8(password);
   state.keyring.addPair(pair);
-  addPair(state, json);
   pair.lock();
 
   return pair;

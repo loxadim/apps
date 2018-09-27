@@ -7,17 +7,18 @@ import { SingleAddress } from './observable/types';
 import { KeyringAddress, KeyringInstance, State } from './types';
 
 import testKeyring from '@polkadot/keyring/testing';
+import hexToU8a from '@polkadot/util/hex/toU8a';
+import createPair from '@polkadot/util-keyring/pair';
+import decodeAddress from '@polkadot/util-keyring/address/decode';
 
 import accounts from './observable/accounts';
 import addresses from './observable/addresses';
 import development from './observable/development';
 import loadAll from './loadAll';
-import addPair from './account/addPair';
 import backupAccount from './account/backup';
 import createAccount from './account/create';
 import createAccountMnemonic from './account/mnemonic';
 import forgetAccount from './account/forget';
-import restoreAccount from './account/restore';
 import isAvailable from './isAvailable';
 import isPassValid from './isPassValid';
 import encryptAccount from './account/encrypt';
@@ -44,8 +45,13 @@ class Keyring implements KeyringInstance {
     this.loadAll();
   }
 
-  addPair (json: KeyringPair$Json): void {
-    return addPair(this.state, json);
+  addAccountPair (json: KeyringPair$Json): void {
+    if (!json.meta.whenCreated) {
+      json.meta.whenCreated = Date.now();
+    }
+
+    this.state.keyring.addFromJson(json);
+    this.state.accounts.add(json.address, json);
   }
 
   backupAccount (pair: KeyringPair, password: string): KeyringPair$Json {
@@ -107,7 +113,21 @@ class Keyring implements KeyringInstance {
   }
 
   restoreAccount (json: KeyringPair$Json, password: string): KeyringPair {
-    return restoreAccount(this.state, json, password);
+    const pair = createPair(
+      {
+        publicKey: decodeAddress(json.address),
+        secretKey: new Uint8Array()
+      },
+      json.meta,
+      hexToU8a(json.encoded)
+    );
+
+    pair.decodePkcs8(password);
+    pair.lock();
+    this.state.keyring.addPair(pair);
+    this.addAccountPair(json);
+
+    return pair;
   }
 
   saveAccount (pair: KeyringPair, password?: string): void {
