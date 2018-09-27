@@ -15,13 +15,11 @@ import accounts from './observable/accounts';
 import addresses from './observable/addresses';
 import development from './observable/development';
 import loadAll from './loadAll';
-import createAccount from './account/create';
-import createAccountMnemonic from './account/mnemonic';
-import forgetAccount from './account/forget';
 import isAvailable from './isAvailable';
 import isPassValid from './isPassValid';
+import createAccountMnemonic from './account/mnemonic';
 import encryptAccount from './account/encrypt';
-import saveAccount from './account/save';
+import forgetAccount from './account/forget';
 import saveAccountMeta from './account/meta';
 import forgetAddress from './address/forget';
 import getAccounts from './account/all';
@@ -64,7 +62,11 @@ class Keyring implements KeyringInstance {
   }
 
   createAccount (seed: Uint8Array, password?: string, meta?: KeyringPair$Meta): KeyringPair {
-    return createAccount(this.state, seed, password, meta);
+    const pair = this.state.keyring.addFromSeed(seed, meta);
+
+    this.saveAccount(pair, password);
+
+    return pair;
   }
 
   createAccountMnemonic (seed: string, password?: string, meta?: KeyringPair$Meta): KeyringPair {
@@ -128,15 +130,22 @@ class Keyring implements KeyringInstance {
     );
 
     pair.decodePkcs8(password);
-    pair.lock();
     this.state.keyring.addPair(pair);
     this.addAccountPair(json);
+    pair.lock();
 
     return pair;
   }
 
   saveAccount (pair: KeyringPair, password?: string): void {
-    return saveAccount(this.state, pair, password);
+    const json = pair.toJson(password);
+
+    if (!json.meta.whenCreated) {
+      json.meta.whenCreated = Date.now();
+    }
+
+    this.state.keyring.addFromJson(json);
+    this.state.accounts.add(json.address, json);
   }
 
   saveAccountMeta (pair: KeyringPair, meta: KeyringPair$Meta): void {
