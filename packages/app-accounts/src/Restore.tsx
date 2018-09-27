@@ -7,22 +7,8 @@ import { I18nProps } from '@polkadot/ui-app/types';
 
 import React from 'react';
 import { AddressSummary, Button, InputAddress, InputFile, Password } from '@polkadot/ui-app/index';
-import classes from '@polkadot/ui-app/util/classes';
-<<<<<<< HEAD
-import createPair from '@polkadot/keyring/pair';
 import { decodeAddress } from '@polkadot/keyring';
-import { hexToU8a, isHex, isObject, u8aToString } from '@polkadot/util';
-=======
-import AddressSummary from '@polkadot/ui-app/AddressSummary';
-import Button from '@polkadot/ui-app/Button';
-import InputFile from '@polkadot/ui-app/InputFile';
-import { InputAddress } from '@polkadot/ui-app/InputAddress';
-import Password from '@polkadot/ui-app/Password';
-import decodeAddress from '@polkadot/util-keyring/address/decode';
-import isHex from '@polkadot/util/is/hex';
-import isObject from '@polkadot/util/is/object';
-import u8aToUtf8 from '@polkadot/util/u8a/toUtf8';
->>>>>>> 7d8b33e5... fix: Move restoreAccount logic into ui-keyring. Fix bug. Remove addAccountPair. See detailed comments
+import { isHex, isObject, u8aToString } from '@polkadot/util';
 import keyring from '@polkadot/ui-keyring/index';
 
 import translate from './translate';
@@ -53,11 +39,11 @@ class Restore extends React.PureComponent<Props, State> {
   }
 
   render () {
-    const { className, t } = this.props;
+    const { t } = this.props;
     const { isFileValid, isPassValid, json } = this.state;
 
     return (
-      <div className={classes('accounts--Restore', className)}>
+      <div className='accounts--Restore'>
         <div className='ui--grid'>
           <AddressSummary
             className='shrink'
@@ -153,23 +139,7 @@ class Restore extends React.PureComponent<Props, State> {
     }
 
     try {
-<<<<<<< HEAD
-      const pair = createPair(
-        {
-          publicKey: decodeAddress(json.address),
-          secretKey: new Uint8Array()
-        },
-        json.meta,
-        hexToU8a(json.encoded)
-      );
-
-      // unlock, save account and then lock (locking cleans secretKey, so needs to be last)
-      pair.decodePkcs8(password);
-      keyring.addAccountPair(pair, password);
-      pair.lock();
-=======
       const pair = keyring.restoreAccount(json, password);
->>>>>>> 7d8b33e5... fix: Move restoreAccount logic into ui-keyring. Fix bug. Remove addAccountPair. See detailed comments
 
       InputAddress.setLastValue('account', pair.address());
 

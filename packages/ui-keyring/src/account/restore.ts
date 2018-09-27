@@ -21,10 +21,11 @@ export default function accountRestore (state: State, json: KeyringPair$Json, pa
     hexToU8a(json.encoded)
   );
 
+  // unlock, save account and then lock (locking cleans secretKey, so needs to be last)
   pair.decodePkcs8(password);
-  pair.lock();
   state.keyring.addPair(pair);
   addPair(state, json);
+  pair.lock();
 
   return pair;
 }
