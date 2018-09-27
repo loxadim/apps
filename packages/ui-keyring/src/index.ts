@@ -7,6 +7,7 @@ import { SingleAddress } from './observable/types';
 import { KeyringAddress, KeyringInstance, State } from './types';
 
 import testKeyring from '@polkadot/keyring/testing';
+import store from 'store';
 import hexToU8a from '@polkadot/util/hex/toU8a';
 import createPair from '@polkadot/util-keyring/pair';
 import decodeAddress from '@polkadot/util-keyring/address/decode';
@@ -19,14 +20,13 @@ import isAvailable from './isAvailable';
 import isPassValid from './isPassValid';
 import createAccountMnemonic from './account/mnemonic';
 import encryptAccount from './account/encrypt';
-import forgetAccount from './account/forget';
-import saveAccountMeta from './account/meta';
 import forgetAddress from './address/forget';
 import getAccounts from './account/all';
 import getAddress from './address/get';
 import getAddresses from './address/all';
 import saveAddress from './address/meta';
 import saveRecent from './address/metaRecent';
+import { accountKey } from './defaults';
 
 class Keyring implements KeyringInstance {
   private state: State;
@@ -150,7 +150,13 @@ class Keyring implements KeyringInstance {
   }
 
   saveAccountMeta (pair: KeyringPair, meta: KeyringPair$Meta): void {
-    return saveAccountMeta(this.state, pair, meta);
+    const address = pair.address();
+    const json = store.get(accountKey(address));
+
+    pair.setMeta(meta);
+    json.meta = pair.getMeta();
+
+    this.state.accounts.add(json.address, json);
   }
 
   saveAddress (address: string, meta: KeyringPair$Meta): void {
