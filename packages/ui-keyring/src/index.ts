@@ -78,7 +78,8 @@ class Keyring implements KeyringInstance {
   }
 
   forgetAccount (address: string): void {
-    return forgetAccount(this.state, address);
+    this.state.keyring.removePair(address);
+    this.state.accounts.remove(address);
   }
 
   forgetAddress (address: string): void {
