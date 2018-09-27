@@ -188,7 +188,7 @@ class Editor extends React.PureComponent<Props, State> {
       return;
     }
 
-    keyring.saveAddress(current.address(), {
+    keyring.saveAddressMeta(current.address(), {
       name: editedName,
       whenEdited: Date.now()
     });
