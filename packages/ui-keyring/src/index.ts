@@ -249,7 +249,21 @@ class Keyring implements KeyringInstance {
   }
 
   saveRecent (address: string): SingleAddress {
-    return saveRecent(this.state, address);
+    const available = this.state.addresses.subject.getValue();
+
+    if (!available[address]) {
+      const json = {
+        address,
+        meta: {
+          isRecent: true,
+          whenCreated: Date.now()
+        }
+      };
+
+      this.state.addresses.add(address, (json as KeyringJson));
+    }
+
+    return this.state.addresses.subject.getValue()[address];
   }
 
   setDevMode (isDevelopment: boolean): void {
