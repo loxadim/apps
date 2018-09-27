@@ -228,7 +228,7 @@ class Keyring implements KeyringInstance {
 
   initOptions (): void {
     if (hasCalledInitOptions) {
-      return;
+      throw new Error('Unable to initialise options more than once');
     }
 
     observableAll.subscribe((value) => {
@@ -400,6 +400,11 @@ class Keyring implements KeyringInstance {
 }
 
 Keyring.counter = 0;
+
+export {
+  Keyring
+};
+
 const keyringInstance = new Keyring();
 
 export default keyringInstance;
