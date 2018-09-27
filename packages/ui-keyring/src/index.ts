@@ -19,7 +19,6 @@ import isAvailable from './isAvailable';
 import isPassValid from './isPassValid';
 import createAccountMnemonic from './account/mnemonic';
 import encryptAccount from './account/encrypt';
-import saveRecent from './address/metaRecent';
 import { accountKey, accountRegex, addressRegex } from './defaults';
 import initOptions from './options';
 
@@ -37,7 +36,7 @@ class Keyring implements KeyringInstance {
     this.loadAll();
   }
 
-  addAccountPair (json: KeyringPair$Json): void {
+  addPair (json: KeyringPair$Json): void {
     if (!json.meta.whenCreated) {
       json.meta.whenCreated = Date.now();
     }
@@ -46,7 +45,7 @@ class Keyring implements KeyringInstance {
     this.state.accounts.add(json.address, json);
   }
 
-  addAccountPairs (): void {
+  addPairs (): void {
     this.state.keyring
       .getPairs()
       .forEach((pair) => {
@@ -159,7 +158,7 @@ class Keyring implements KeyringInstance {
   loadAll (): void {
     const { accounts, addresses, keyring } = this.state;
 
-    this.addAccountPairs();
+    this.addPairs();
 
     store.each((json: KeyringJson, key: string) => {
       if (accountRegex.test(key)) {
@@ -201,7 +200,7 @@ class Keyring implements KeyringInstance {
 
     pair.decodePkcs8(password);
     this.state.keyring.addPair(pair);
-    this.addAccountPair(json);
+    this.addPair(json);
     pair.lock();
 
     return pair;
