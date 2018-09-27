@@ -19,6 +19,7 @@ import createAccountMnemonic from './account/mnemonic';
 import forgetAccount from './account/forget';
 import restoreAccount from './account/restore';
 import isAvailable from './isAvailable';
+import isPassValid from './isPassValid';
 import encryptAccount from './account/encrypt';
 import saveAccount from './account/save';
 import saveAccountMeta from './account/meta';
@@ -28,9 +29,6 @@ import getAddress from './address/get';
 import getAddresses from './address/all';
 import saveAddress from './address/meta';
 import saveRecent from './address/metaRecent';
-
-// NOTE Everything is loaded in API after chain is received
-// loadAll(state);
 
 class Keyring implements KeyringInstance {
   private state: State;
@@ -42,6 +40,7 @@ class Keyring implements KeyringInstance {
       keyring: testKeyring()
     };
 
+    // NOTE Everything is loaded in API after chain is received
     this.loadAll();
   }
 
@@ -75,6 +74,10 @@ class Keyring implements KeyringInstance {
 
   isAvailable (address: string | Uint8Array): boolean {
     return isAvailable(this.state, address);
+  }
+
+  isPassValid (password: string): boolean {
+    return isPassValid(this.state, password);
   }
 
   getAccounts (): Array<KeyringAddress> {

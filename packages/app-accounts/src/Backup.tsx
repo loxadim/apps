@@ -130,13 +130,9 @@ class Backup extends React.PureComponent<Props, State> {
 
   private onChangePass = (password: string) => {
     this.setState({
-      isPassValid: this.validatePass(password),
+      isPassValid: keyring.isPassValid(password),
       password
     });
-  }
-
-  private validatePass (password: string): boolean {
-    return password.length > 0 && password.length <= 32;
   }
 }
 
