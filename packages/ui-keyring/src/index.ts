@@ -15,7 +15,6 @@ import accounts from './observable/accounts';
 import addresses from './observable/addresses';
 import development from './observable/development';
 import loadAll from './loadAll';
-import backupAccount from './account/backup';
 import createAccount from './account/create';
 import createAccountMnemonic from './account/mnemonic';
 import forgetAccount from './account/forget';
@@ -55,7 +54,13 @@ class Keyring implements KeyringInstance {
   }
 
   backupAccount (pair: KeyringPair, password: string): KeyringPair$Json {
-    return backupAccount(this.state, pair, password);
+    if (!pair.isLocked()) {
+      pair.lock();
+    }
+
+    pair.decodePkcs8(password);
+
+    return pair.toJson(password);
   }
 
   createAccount (seed: Uint8Array, password?: string, meta?: KeyringPair$Meta): KeyringPair {
