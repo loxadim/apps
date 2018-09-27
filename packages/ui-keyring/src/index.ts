@@ -15,11 +15,9 @@ import createPair from '@polkadot/keyring/pair';
 import accounts from './observable/accounts';
 import addresses from './observable/addresses';
 import development from './observable/development';
-import isAvailable from './isAvailable';
-import isPassValid from './isPassValid';
 import createAccountMnemonic from './account/mnemonic';
 import encryptAccount from './account/encrypt';
-import { accountKey, accountRegex, addressRegex } from './defaults';
+import { accountKey, accountRegex, addressRegex, MAX_PASS_LEN } from './defaults';
 import initOptions from './options';
 
 class Keyring implements KeyringInstance {
@@ -93,12 +91,19 @@ class Keyring implements KeyringInstance {
     this.state.addresses.remove(address);
   }
 
-  isAvailable (address: string | Uint8Array): boolean {
-    return isAvailable(this.state, address);
+  isAvailable (_address: string | Uint8Array): boolean {
+    const accounts = this.state.accounts.subject.getValue();
+    const addresses = this.state.addresses.subject.getValue();
+
+    const address = isString(_address)
+      ? _address
+      : encodeAddress(_address);
+
+    return !accounts[address] && !addresses[address];
   }
 
   isPassValid (password: string): boolean {
-    return isPassValid(this.state, password);
+    return password.length > 0 && password.length <= MAX_PASS_LEN;
   }
 
   getAccounts (): Array<KeyringAddress> {
