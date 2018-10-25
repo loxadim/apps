@@ -30,5 +30,6 @@ export {
   accountRegex,
   addressKey,
   addressRegex,
+  toHex,
   MAX_PASS_LEN
 };

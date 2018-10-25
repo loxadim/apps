@@ -4,6 +4,7 @@
 
 import { ApiProps } from '@polkadot/ui-react-rx/types';
 import { I18nProps, BareProps } from '@polkadot/ui-app/types';
+import { RpcMethod } from '@polkadot/jsonrpc/types';
 import { QueueTx, QueueTx$Id, QueueTx$MessageSetStatus, QueueTx$Result, QueueTx$Status } from './types';
 
 import React from 'react';
@@ -17,7 +18,6 @@ import { Extrinsic } from '@polkadot/types';
 import ExtrinsicDisplay from './Extrinsic';
 import Unlock from './Unlock';
 import translate from './translate';
-import { RpcMethod } from '@polkadot/jsonrpc/types';
 
 type BaseProps = BareProps & {
   queue: Array<QueueTx>,

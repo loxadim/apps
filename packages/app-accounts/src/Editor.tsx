@@ -81,14 +81,6 @@ class Editor extends React.PureComponent<Props, State> {
         />
         <Button.Group.Divider />
         <Button
-          isDisabled={isEdited}
-          onClick={this.toggleBackup}
-          text={t('editor.backup', {
-            defaultValue: 'Backup'
-          })}
-        />
-        <Button.Group.Divider />
-        <Button
           isDisabled={!isEdited}
           onClick={this.onDiscard}
           text={t('editor.reset', {

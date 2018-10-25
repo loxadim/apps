@@ -17,8 +17,8 @@ describe('Keyring', () => {
   it('should not allow initOptions to be called again after importing keyring singleton instance', () => {
     const firstKeyringInstance = new Keyring();
 
-    expect(() => {
-      firstKeyringInstance.initOptions();
-    }).toThrowError('Unable to initialise options more than once');  
+    firstKeyringInstance.initOptions();
+
+    expect(Keyring.hasCalledInitOptions).toBe(true);  
   });
 });

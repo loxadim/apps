@@ -14,16 +14,13 @@ import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import testKeyring from '@polkadot/keyring/testing';
 import createPair from '@polkadot/keyring/pair';
 
-import createAccountMnemonic from './account/mnemonic';
-import encryptAccount from './account/encrypt';
 import observableAll from './observable';
 import observableAccounts from './observable/accounts';
 import observableAddresses from './observable/addresses';
 import observableDevelopment from './observable/development';
-import { accountKey, accountRegex, addressRegex, MAX_PASS_LEN } from './defaults';
+import { accountKey, accountRegex, addressKey, addressRegex, MAX_PASS_LEN } from './defaults';
 
 let singletonInstance: Keyring | null = null;
-let hasCalledInitOptions = false;
 
 class Keyring implements KeyringInstance {
   private state: State;
@@ -40,6 +37,7 @@ class Keyring implements KeyringInstance {
   private optionsSubject: BehaviorSubject<KeyringOptions> = new BehaviorSubject(this.emptyOptions());
 
   static counter: number;
+  static hasCalledInitOptions: boolean = false;
 
   constructor () {
     // state must be always defined in the constructor even if trying to create second instance to overcome TSLint error
@@ -133,7 +131,7 @@ class Keyring implements KeyringInstance {
     return pair.toJson(password);
   }
 
-  createAccount (seed: Uint8Array, password?: string, meta?: KeyringPair$Meta): KeyringPair {
+  createAccount (seed: Uint8Array, password?: string, meta: KeyringPair$Meta = {}): KeyringPair {
     const pair = this.state.keyring.addFromSeed(seed, meta);
 
     this.saveAccount(pair, password);
@@ -141,8 +139,12 @@ class Keyring implements KeyringInstance {
     return pair;
   }
 
-  createAccountMnemonic (seed: string, password?: string, meta?: KeyringPair$Meta): KeyringPair {
-    return createAccountMnemonic(this.state, seed, password, meta);
+  createAccountMnemonic (seed: string, password?: string, meta: KeyringPair$Meta = {}): KeyringPair {
+    const pair = this.state.keyring.addFromMnemonic(seed, meta);
+
+    this.saveAccount(pair, password);
+
+    return pair;
   }
 
   createOptionHeader (name: string): KeyringSectionOption {
@@ -156,7 +158,13 @@ class Keyring implements KeyringInstance {
   }
 
   encryptAccount (pair: KeyringPair, password: string): void {
-    return encryptAccount(this.state, pair, password);
+    const { accounts, keyring } = this.state;
+    const json = pair.toJson(password);
+
+    json.meta.whenEdited = Date.now();
+
+    keyring.addFromJson(json);
+    accounts.add(json.address, json);
   }
 
   forgetAccount (address: string): void {
@@ -227,8 +235,9 @@ class Keyring implements KeyringInstance {
   }
 
   initOptions (): void {
-    if (hasCalledInitOptions) {
-      throw new Error('Unable to initialise options more than once');
+    if (Keyring.hasCalledInitOptions) {
+      console.warn('Unable to initialise Keyring options more than once');
+      return;
     }
 
     observableAll.subscribe((value) => {
@@ -258,11 +267,11 @@ class Keyring implements KeyringInstance {
 
       this.optionsSubject.next(options);
 
-      hasCalledInitOptions = true;
+      Keyring.hasCalledInitOptions = true;
     });
   }
 
-  isAvailable (_address: string | Uint8Array): boolean {
+  isAvailable (_address: Uint8Array | string): boolean {
     const { accounts, addresses } = this.state;
 
     const accountsSubject = accounts.subject.getValue();
@@ -286,25 +295,32 @@ class Keyring implements KeyringInstance {
 
     store.each((json: KeyringJson, key: string) => {
       if (accountRegex.test(key)) {
-        if (!json.meta || !json.meta.isTesting) {
-          keyring.addFromJson(json as KeyringPair$Json);
-          accounts.add(json.address, json);
+        if (!json.meta.isTesting && (json as KeyringPair$Json).encoded) {
+          const pair = keyring.addFromJson(json as KeyringPair$Json);
+
+          accounts.add(pair.address(), json);
+        }
+
+        const [, hexAddr] = key.split(':');
+
+        if (hexAddr.substr(0, 2) !== '0x') {
+          store.remove(key);
+          store.set(accountKey(hexAddr), json);
         }
       } else if (addressRegex.test(key)) {
-        const address = isHex(json.address)
-          ? encodeAddress(hexToU8a(json.address))
-          : json.address;
+        const address = encodeAddress(
+          isHex(json.address)
+            ? hexToU8a(json.address)
+            : decodeAddress(json.address)
+        );
+        const [, hexAddr] = key.split(':');
 
-        // NOTE This is a fix for an older version where publicKeys instead of addresses
-        // were saved. Here we clean the old and replace with a new address-specific key
-        if (address !== json.address) {
-          json.address = address;
+        addresses.add(address, json);
 
+        if (hexAddr.substr(0, 2) !== '0x') {
           store.remove(key);
-          this.saveAddressMeta(address, json.meta);
+          store.set(addressKey(hexAddr), json);
         }
-
-        addresses.add(json.address, json);
       }
     });
 
@@ -312,6 +328,8 @@ class Keyring implements KeyringInstance {
   }
 
   restoreAccount (json: KeyringPair$Json, password: string): KeyringPair {
+    const { keyring } = this.state;
+
     const pair = createPair(
       {
         publicKey: decodeAddress(json.address),
@@ -321,8 +339,9 @@ class Keyring implements KeyringInstance {
       hexToU8a(json.encoded)
     );
 
+    // unlock, save account and then lock (locking cleans secretKey, so needs to be last)
     pair.decodePkcs8(password);
-    this.state.keyring.addPair(pair);
+    keyring.addPair(pair);
     this.addPair(json);
     pair.lock();
 

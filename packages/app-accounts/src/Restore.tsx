@@ -6,7 +6,8 @@ import { KeyringPair$Json } from '@polkadot/keyring/types';
 import { I18nProps } from '@polkadot/ui-app/types';
 
 import React from 'react';
-import { AddressSummary, Button, InputAddress, InputFile, Password } from '@polkadot/ui-app/index';
+import { AddressSummary, Button, InputFile, Password } from '@polkadot/ui-app/index';
+import { InputAddress } from '@polkadot/ui-app/InputAddress';
 import { decodeAddress } from '@polkadot/keyring';
 import { isHex, isObject, u8aToString } from '@polkadot/util';
 import keyring from '@polkadot/ui-keyring/index';
@@ -142,7 +143,6 @@ class Restore extends React.PureComponent<Props, State> {
       const pair = keyring.restoreAccount(json, password);
 
       InputAddress.setLastValue('account', pair.address());
-
       onRestoreAccount();
     } catch (error) {
       this.setState({ isPassValid: false });
