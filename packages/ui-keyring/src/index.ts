@@ -12,9 +12,7 @@ import createPair from '@polkadot/keyring/pair';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex, isString } from '@polkadot/util';
 
-import observableAccounts from './observable/accounts';
-import observableAddresses from './observable/addresses';
-import observableDevelopment from './observable/development';
+import keyringObservable from './observable';
 import { accountKey, addressKey, accountRegex, addressRegex, MAX_PASS_LEN } from './defaults';
 import keyringOption from './options';
 
@@ -26,8 +24,8 @@ class Keyring implements KeyringInstance {
   constructor () {
     // state must be always defined in the constructor even if trying to create second instance to overcome TSLint error
     this.state = {
-      accounts: observableAccounts,
-      addresses: observableAddresses,
+      accounts: keyringObservable.accounts(),
+      addresses: keyringObservable.addresses(),
       keyring: testKeyring()
     };
 
@@ -164,7 +162,7 @@ class Keyring implements KeyringInstance {
 
   getPairs (): Array<KeyringPair> {
     return this.state.keyring.getPairs().filter((pair: KeyringPair) =>
-      observableDevelopment.isDevelopment() || pair.getMeta().isTesting !== true
+      keyringObservable.isDevelopment() || pair.getMeta().isTesting !== true
     );
   }
 
@@ -304,7 +302,7 @@ class Keyring implements KeyringInstance {
   }
 
   setDevMode (isDevelopment: boolean): void {
-    observableDevelopment.set(isDevelopment);
+    keyringObservable.set(isDevelopment);
   }
 }
 
