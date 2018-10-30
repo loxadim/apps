@@ -12,15 +12,13 @@ import testKeyring from '@polkadot/keyring/testing';
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { hexToU8a, isHex, isString } from '@polkadot/util';
 
-import accounts from './observable/accounts';
-import addresses from './observable/addresses';
-import observableDevelopment from './observable/development';
+import KeyringObservable from './observable';
 import { accountKey, addressKey, accountRegex, addressRegex, MAX_PASS_LEN } from './defaults';
 import keyringOption from './options';
 
 const state: State = {
-  accounts,
-  addresses
+  accounts: KeyringObservable.accounts(),
+  addresses: KeyringObservable.addresses()
 } as State;
 
 // No accounts (or test accounts) should be loaded until after the chain determination.
@@ -156,7 +154,7 @@ class Keyring implements KeyringInstance {
 
   getPairs (): Array<KeyringPair> {
     return state.keyring.getPairs().filter((pair: KeyringPair) =>
-      observableDevelopment.isDevelopment() || pair.getMeta().isTesting !== true
+      KeyringObservable.isDevelopment() || pair.getMeta().isTesting !== true
     );
   }
 
@@ -300,7 +298,7 @@ class Keyring implements KeyringInstance {
   }
 
   setDevMode (isDevelopment: boolean): void {
-    observableDevelopment.set(isDevelopment);
+    KeyringObservable.set(isDevelopment);
   }
 }
 
